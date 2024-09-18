@@ -4,7 +4,6 @@ import csvParser from "csv-parser";
 const fs = require("fs");
 import keccak256 from "keccak256";
 
-// Function to generate merkle root
 async function generateRootHash(): Promise<string> {
   return new Promise((resolve, reject) => {
     let results: Buffer[] = [];
@@ -33,8 +32,37 @@ async function generateRootHash(): Promise<string> {
   });
 }
 
+// Function to generate merkle root
+// async function generateRootHash(): Promise<string> {
+//   return new Promise((resolve, reject) => {
+//     let results: Buffer[] = [];
+
+//     fs.createReadStream('airdrop.csv')
+//       .pipe(csvParser())
+//       .on('data', (row: { address: string; amount: string }) => {  
+//         const address = row.address;
+//         const amount = row.amount;
+//         const leaf = keccak256(
+//           ethers.solidityPacked(["address", "uint256"], [address, amount])
+//         );
+//         results.push(leaf);
+//       })
+//       .on('end', () => {
+//         const tree = new MerkleTree(results, keccak256, {
+//           sortPairs: true,
+//         });
+
+//         const roothash = tree.getHexRoot();
+//         console.log('Merkle Root:', roothash);
+
+//         resolve(roothash);  
+//       })
+//       .on('error', reject); 
+//   });
+// }
+
 // The function then generates a proof for the target address and amount, and returns the proof.
-async function generateMerkleProof( targetAddress: string, targetAmount: string, ): Promise<string[]> {
+async function getProof( targetAddress: string, targetAmount: string, ): Promise<string[]> {
   const userData = await getUserDataFromCSV();
   
   return new Promise((resolve, reject) => {
@@ -79,4 +107,4 @@ async function getUserDataFromCSV(): Promise<{ address: string, amount: string }
 }
 
 
-export  { generateRootHash, generateMerkleProof, };
+export  { generateRootHash, getProof, getUserDataFromCSV };

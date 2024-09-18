@@ -21,23 +21,24 @@ contract BaycGatedMerkleAirdrop {
     }
 
     function claimAirdrop(
+        address claimant,
         uint256 amount,
         bytes32[] calldata merkleProof
     ) external {
-        require(baycNft.balanceOf(msg.sender) > 0, "Must own a BAYC NFT to claim");
-        require(!hasClaimed[msg.sender], "Airdrop already claimed.");
+        require(baycNft.balanceOf(claimant) > 0, "Must own a BAYC NFT to claim");
+        require(!hasClaimed[claimant], "Airdrop already claimed.");
 
-        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(msg.sender, amount))));
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(claimant, amount))));
 
         require(
             MerkleProof.verify(merkleProof, merkleRoot, leaf),
             "Invalid Merkle proof."
         );
 
-        hasClaimed[msg.sender] = true;
+        hasClaimed[claimant] = true;
 
-        require(token.transfer(msg.sender, amount), "Token transfer failed.");
+        require(token.transfer(claimant, amount), "Token transfer failed.");
 
-        emit AirdropClaimed(msg.sender, amount);
+        emit AirdropClaimed(claimant, amount);
     }
 }
